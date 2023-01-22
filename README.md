@@ -1,7 +1,8 @@
 # Keskustelusovellus
 
 Esimerkkiaihetta mukaileva sovellus on internetfoorumi-tyylinen, eli se sisältää eri aihekategorioita jotka sisältävät relevantteja viesteistä koostuvia keskusteluketjuja.\
-Viestit voivat sisältää tekstin lisäksi myös pienen upotetun kuvatiedoston.\ \
+Viestit voivat sisältää tekstin lisäksi myös pienen upotetun kuvatiedoston.\ 
+
 Käyttäjätyyppejä on kaksi: **ylläpitäjä** ja **peruskäyttäjä**.
 
 ## Ominaisuuksia:
