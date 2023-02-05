@@ -21,12 +21,15 @@ Käyttäjätyyppejä on kaksi: **ylläpitäjä** ja **peruskäyttäjä**.
 Kloonaa ensin projektin koodi omalle laitteelleesi
 
 luo pythonin virtuaaliympäristö, aktivoi se ja asenna riippuvuudet
+
 ```
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r ./requirements.txt
+```
 
 sovellus käynnistyy projektin juurihakemistossa
+
 ```
 flask run
 ```
