@@ -20,6 +20,8 @@ Käyttäjätyyppejä on kaksi: **ylläpitäjä** ja **peruskäyttäjä**.
 
 Kloonaa ensin projektin koodi omalle laitteelleesi
 
+Luo .dotenv kansio juurihakemistoon ja lisää tietokantayhteys ympäristömuuttujana muodossa "DATABASE_URI=tietokantasi_tähän"
+
 luo pythonin virtuaaliympäristö, aktivoi se ja asenna riippuvuudet
 
 ```
