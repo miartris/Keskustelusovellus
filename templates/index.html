@@ -1,0 +1,19 @@
+<body>
+    <h1>Keskustelusovellus</h1>
+    <div class="navbar">
+        <nav>
+            <a href="/login">login</a>
+            <a href="/register">register</a>
+        </nav>
+    </div>
+    <h2>topics</h2>
+    <div class="topics">
+        <ul>
+            {% for index in range(5) %}
+            <li>
+                <p>example topic {{ index }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
