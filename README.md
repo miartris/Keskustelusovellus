@@ -21,8 +21,9 @@ Käyttäjätyyppejä on kaksi: **ylläpitäjä** ja **peruskäyttäjä**.
 Kloonaa ensin projektin koodi omalle laitteelleesi
 
 Luo .dotenv kansio juurihakemistoon ja lisää tietokantayhteys ympäristömuuttujana muodossa "DATABASE_URI=tietokantasi_tähän"
+ja flask-sessioita varten sala-avain "SECRET_KEY=avain_tähän"
 
-luo pythonin virtuaaliympäristö, aktivoi se ja asenna riippuvuudet
+luo pythonin virtuaaliympäristö, aktivoi se ja asenna riippuvuudet. Linuxilla
 
 ```
 python3 -m venv .venv
