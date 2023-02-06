@@ -17,6 +17,7 @@ def register():
         password = request.form["reg_password"]
         hashed_pw = generate_password_hash(password)
         models.create_new_user(name, hashed_pw)
+        # ToDo: Handle error from duplicate usernames
         return redirect("/login")
 
     return render_template("register.html")
@@ -26,5 +27,7 @@ def login():
     if request.method == "POST":
         name = request.form["login_name"]
         password = request.form["login_password"]
+        models.fetch_user_data(name)
+        
     else:
         return render_template("login.html")

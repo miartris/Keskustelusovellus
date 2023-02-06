@@ -6,7 +6,7 @@ def fetch_user_data(name: str):
     result = db.session.execute(query, {"username":name})
 
 def create_new_user(name: str, hashed_password: str):
-    query = text("INSERT INTO users (username, password) VALUES (:username, :password)")
+    query = text("INSERT INTO users (username, password) VALUES (:username, :password) ON CONFLICT DO NOTHING")
     db.session.execute(query, {"username":name, "password":hashed_password})
     db.session.commit()
     
