@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, session, flash
 from os import getenv
 import models
 
@@ -24,10 +24,14 @@ def login():
     if request.method == "POST":
         name = request.form["login_name"]
         password = request.form["login_password"]
-        user = models.fetch_user_data(name, password)
-        if user:
-            pass
-            
+        user = models.check_user_data(name, password)
+        if user["is_user"]:
+            session["username"] = name
+            flash("Login successful")
+            return redirect("/")
+        else:
+            flash(user["error"])
+            return redirect("/login")
 
     else:
         return render_template("login.html")

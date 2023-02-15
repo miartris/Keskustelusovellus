@@ -1,0 +1,8 @@
+.notification {
+    display: inline;
+    padding: 1em;
+}
+
+.is_error {
+    background-color: red;
+}

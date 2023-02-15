@@ -2,18 +2,20 @@ from db import db
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
 
-def fetch_user_data(name: str, password: str):
-    query = "SELECT username, id, password FROM users WHERE username=:username"
+def check_user_data(name: str, password: str):
+    query = text("SELECT username, id, password FROM users WHERE username=:username")
     result = db.session.execute(query, {"username":name})
     user = result.fetchone()
+    user_object = {"is_user": False, "username": name, "error": None}
     if not user:
-        # case invalid        
+        user_object["error"] = "No such user"        
     else:
         hashval = user.password
         if check_password_hash(hashval, password):
-            pass #all good
+            user_object["is_user"] = True
         else:
-            pass # wrong pw
+            user_object["error"] = "Wrong password"
+    return user_object
 
 
 def create_new_user(name: str, password: str):
