@@ -1,3 +1,6 @@
+{% extends "layout.html" %}
+
+{% block content %}
 <h1>Keskustelusovellus</h1>
 <h2>topics</h2>
 <div class="topics">
@@ -9,9 +12,4 @@
         {% endfor %}
     </ul>
 </div>
-<div class="navbar">
-    <nav>
-        <a href="/login">login</a>
-        <a href="/register">register</a>
-    </nav>
-</div>
+{% endblock %}
