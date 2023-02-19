@@ -1,8 +1,12 @@
 .notification {
-    display: inline;
-    padding: 1em;
+    display: inline-block;
+    padding: 2em;
 }
 
 .is_error {
     background-color: red;
+}
+
+.is_success {
+    background-color: green;
 }

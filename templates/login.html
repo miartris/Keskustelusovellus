@@ -1,13 +1,6 @@
 {% extends "layout.html" %}
 
 {% block content %}
-{% with messages = get_flashed_messages() %}
-{% if get_flashed_messages() %}
-    <div class="notification is_error">
-        {{ messages[0] }}.
-    </div>
-{% endif %}
-{% endwith %}
 <h2>Log in with an existing account</h2>
 <form action="/login" method="POST">
     Name:

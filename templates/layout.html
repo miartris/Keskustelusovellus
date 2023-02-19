@@ -3,14 +3,29 @@
         <link rel="stylesheet" href=" {{  url_for('static', filename='main.css')  }}">
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>My test page</title>
+        <title>Keskustelusovellus</title>
     </head>
     <body>
+        <div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message  in messages %}
+                <div class="notification">
+                    <p class="{{ category }} notification">{{ message }}</p>
+                </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+        </div>
 
         <div class="navbar">
             <nav>
                 <a href="{{ url_for('index') }}">Home</a>
+                {% if not session.get("username") %}
                 <a href="{{ url_for('login') }}">Login</a>
+                {% else %}
+                <a href = "{{ url_for('logout') }}">Logout</a>
+                {% endif %}
                 <a href="{{ url_for('register') }}">Register</a>
             </nav>
         </div>

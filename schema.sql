@@ -1,24 +1,24 @@
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    user_id SERIAL PRIMARY KEY,
     username TEXT UNIQUE,
     password TEXT
-);
+    );
 
 CREATE TABLE topics (
-    id SERIAL PRIMARY KEY,
-    name TEXT UNIQUE NOT NULL,
-);
+    topic_id SERIAL PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL
+    );
 
 CREATE TABLE threads (
-    id SERIAL PRIMARY KEY,
+    thread_id SERIAL PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
-    topic REFERENCES topics(name) NOT NULL,
-    creator_id REFERENCES users(id),
+    topic TEXT REFERENCES topics(name) NOT NULL,
+    creator_id INTEGER REFERENCES users(user_id),
     date_created TIMESTAMP
-);
+    );
 
 CREATE TABLE posts (
-    id SERIAL PRIMARY KEY,
-    creator_id REFERENCES users(id),
-    content CHECK (length(content) <= 500)
-)
+    post_id SERIAL PRIMARY KEY,
+    creator_id INTEGER REFERENCES users(user_id),
+    content TEXT CHECK (length(content) <= 500)
+    );
