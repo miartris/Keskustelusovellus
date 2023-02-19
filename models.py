@@ -30,6 +30,11 @@ def create_new_topic(name: str):
     db.session.exeute(query, {"name":name})
     db.session.commit()
 
+def get_topic(name: str):
+    query = text("SELECT name FROM topics WHERE name = :name")
+    res = db.session.execute(query, {"name":name})
+    return res.fetchone()
+
 def get_all_topics():
     query = text("SELECT name FROM topics")
     result = db.session.execute(query)

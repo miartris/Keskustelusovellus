@@ -6,6 +6,10 @@ import secrets
 
 app.secret_key = getenv("SECRET_KEY")
 
+@app.errorhandler(404)
+def not_found(e):
+    return render_template("error.html", error=404), 404 
+
 @app.route("/")
 def index():
     topics = models.get_all_topics()
@@ -54,8 +58,11 @@ def logout():
 @app.route("/<string:name>", methods=["GET", "POST"])
 def topic(name):
     if request.method == "GET":
-        threads = models.get_all_threads(name)
-        return render_template("topic.html", topic=name, threads=threads)
+        if models.get_topic(name):
+            threads = models.get_all_threads(name)
+            return render_template("topic.html", topic=name, threads=threads)
+        else:
+            abort(404)
     if request.method == "POST":
         print(request)
         thread_title = request.form["title"]
