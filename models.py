@@ -37,6 +37,14 @@ def get_all_topics():
     return result_as_list
 
 def create_new_thread(name: str, topic: str, creator_name: str):
-    query = text("INSERT INTO threads (name, topic, creator_name) VALUES (:name, :topic, :creator_name)")
+    query = text("INSERT INTO threads (name, creator_id, topic_id, date_created)" \
+    "select :name, u.user_id, t.topic_id, NOW() from users u, topics t where " \
+    "u.username = :creator_name and t.name = :topic")
     db.session.execute(query, {"name":name, "topic":topic, "creator_name":creator_name})
     db.session.commit()
+
+def get_all_threads(topic: str):
+    query = text("SELECT thread_id, T.name, date_created FROM threads T INNER JOIN topics D ON T.topic_id = D.topic_id " \
+    "WHERE D.name = :name")
+    res = db.session.execute(query, {"name":topic})
+    return res.fetchall()

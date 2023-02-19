@@ -2,4 +2,27 @@
 
 {% block content %}
 <h2>This is the place to discuss {{ topic }}</h2>
+<div>
+<h3>Current threads</h3>
+</div>
+<ul>
+{% for item in threads %}
+    <a href="">{{ item[1] }}</a> created at {{ item[2] }}
+    <br>
+{% endfor %}
+</ul>
+{% if session.username %}
+<div>
+    <form action="{{ topic }}" id="new_topic" method="POST">
+        <label for="new_topic">Create a new topic</label>
+        <br>
+        <input type="text" name="title" placeholder="title"></input>
+        <br>
+        <textarea type="text" name="content" placeholder="text"></textarea>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <br>
+        <input type="submit" value="Send"></input>
+    </form>
+</div>
+{% endif %}
 {% endblock %}
