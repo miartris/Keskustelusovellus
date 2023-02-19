@@ -3,7 +3,7 @@ from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
 
 def check_user_data(name: str, password: str):
-    query = text("SELECT username, id, password FROM users WHERE username=:username")
+    query = text("SELECT username, user_id, password FROM users WHERE username=:username")
     result = db.session.execute(query, {"username":name})
     user = result.fetchone()
     user_object = {"is_user": False, "username": name, "error": None}
@@ -25,3 +25,18 @@ def create_new_user(name: str, password: str):
     db.session.commit()
     
 
+def create_new_topic(name: str):
+    query = text("INSERT INTO topics (name) VALUES (:name) ON CONFLICT DO NOTHING")
+    db.session.exeute(query, {"name":name})
+    db.session.commit()
+
+def get_all_topics():
+    query = text("SELECT name FROM topics")
+    result = db.session.execute(query)
+    result_as_list = [name[0] for name in result]
+    return result_as_list
+
+def create_new_thread(name: str, topic: str, creator_name: str):
+    query = text("INSERT INTO threads (name, topic, creator_name) VALUES (:name, :topic, :creator_name)")
+    db.session.execute(query, {"name":name, "topic":topic, "creator_name":creator_name})
+    db.session.commit()

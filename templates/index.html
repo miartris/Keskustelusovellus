@@ -5,9 +5,9 @@
 <h2>topics</h2>
 <div class="topics">
     <ul>
-        {% for index in range(5) %}
+        {% for item in topics %}
         <li>
-            <p>example topic {{ index }}</p>
+            <a href="{{ url_for('topic', name=item) }}">{{ item }}</a>
         </li>
         {% endfor %}
     </ul>

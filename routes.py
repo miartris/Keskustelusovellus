@@ -7,7 +7,8 @@ app.secret_key = getenv("SECRET_KEY")
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    topics = models.get_all_topics()
+    return render_template("index.html", topics=topics)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -46,3 +47,7 @@ def logout():
     del session["username"]
     flash("Logout successful", "is_success")
     return redirect(url_for("index"))
+
+@app.route("/<string:name>")
+def topic(name):
+    return render_template("topic.html", topic=name)
