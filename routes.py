@@ -19,7 +19,26 @@ def index():
 def register():
     if request.method == "POST":
         name = request.form["reg_name"]
+        name_stripped = name.strip()
         password = request.form["reg_password"]
+        password_confirmation = request.form["reg_password_check"]
+        
+        if (password != password_confirmation):
+            flash("Passwords don't match", "is_error")
+            return redirect("/register")
+        
+        if (len(name) < 3 or len(name) > 25 or len(name) != len(name_stripped)):
+            flash("Name must be between 3 and 25 characters long and contain no whitespace", "is_error")
+            return redirect("/login")
+
+        if (len(name) < 3 or len(name) > 25 or len(name) != len(name_stripped)):
+            flash("Name must be between 3 and 25 characters long and contain no whitespace", "is_error")
+            return redirect("/login")
+
+        if (len(password) < 3 or len(password) != len(password.strip())):
+            flash("Password must be longer than three characters and contain no whitespace", "is_error")
+            return redirect("/login")
+
         models.create_new_user(name, password)
         flash("Registered successfully", "is_success")
         return redirect("/login")
