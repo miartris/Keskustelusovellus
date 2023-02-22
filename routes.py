@@ -3,6 +3,7 @@ from flask import render_template, redirect, url_for, request, session, flash, a
 from os import getenv
 import models
 import secrets
+#import requests
 
 app.secret_key = getenv("SECRET_KEY")
 
@@ -57,6 +58,7 @@ def login():
   
         if user["is_user"]:
             session["username"] = name
+            session["user_id"] = models.get_user_id()
             session["csrf_token"] = secrets.token_hex(16)
             flash("Login successful", "is_success")
             return redirect("/")
@@ -90,9 +92,16 @@ def topic(name):
         if request_csrf != session.get("csrf_token"):
             abort(403)
         models.create_new_thread(thread_title, name, session.get("username"))
-        return(redirect(f"/{name}"))
+        id = models.get_thread_id(thread_title)
+
+        return(redirect(f"/{name}/{id}"))
     
-@app.route("/<string:name>/<int:id>")
-def thread(id):
-    pass
+@app.route("/<string:topic>/<int:id>", methods=["GET", "POST"])
+def thread(topic, id):
+    if request.method == "GET":
+        posts = models.get_all_posts(id)
+        return render_template("thread.html", topic=topic, posts=posts)
+    if request.method == "POST":
+        models.create_new_post()
+    
     

@@ -23,8 +23,12 @@ def create_new_user(name: str, password: str):
     query = text("INSERT INTO users (username, password) VALUES (:username, :password) ON CONFLICT DO NOTHING")
     db.session.execute(query, {"username":name, "password":hashed_password})
     db.session.commit()
-    
 
+def get_user_id(name: str):
+    query = text("SELECT user_id FROM users WHERE username = :name")
+    res = db.session.execute(query, {"name":name})
+    return res.fetchone()
+    
 def create_new_topic(name: str):
     query = text("INSERT INTO topics (name) VALUES (:name) ON CONFLICT DO NOTHING")
     db.session.exeute(query, {"name":name})
@@ -53,3 +57,20 @@ def get_all_threads(topic: str):
     "WHERE D.name = :name")
     res = db.session.execute(query, {"name":topic})
     return res.fetchall()
+
+def get_all_posts(thread_id: int):
+    query = text("SELECT username, content, name FROM posts P, threads T, users U " \
+    "WHERE P.creator_id = U.user_id AND T.thread_id = :thread_id")
+    res = db.session.execute(query, {"thread_id":thread_id})
+    return res.fetchall() 
+
+def get_thread_id(name:str):
+    query = text("SELECT thread_id FROM threads WHERE name = :name")
+    res = db.session.execute(query, {"name":name})
+    return res.fetchone()[0]
+
+def create_new_post(content: str, user_id: int, thread: str):
+    query = text("INSERT INTO posts (creator_id, thread_id, content)" \
+    "SELECT :user_id, thread_id, :content FROM threads T where T.name = :thread")
+    db.session.execute(query, {"user_id":user_id, "content":content, "thread":thread})
+    db.session.commit()

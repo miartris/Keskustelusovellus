@@ -7,7 +7,7 @@
 </div>
 <ul>
 {% for item in threads %}
-    <a href="">{{ item[1] }}</a> created at {{ item[2] }}
+    <a href="{{ url_for('thread', topic=topic, id=item[0]) }}">{{ item[1] }}</a> created at {{ item[2] }}
     <br>
 {% endfor %}
 </ul>
