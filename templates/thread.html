@@ -2,7 +2,7 @@
 {% block content %}
 {% for post in posts %}
 <li>
-     <b>{{ post[0] }}</b>
+     <b><a href="{{ url_for('profile', username=post[0]) }}">{{ post[0] }}</a></b>
      <p>{{ post[1] }}</p>
 </li>
 {% endfor %}

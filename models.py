@@ -55,7 +55,7 @@ def create_new_thread(name: str, topic: str, creator_name: str):
 
 def get_all_threads(topic: str):
     query = text("SELECT thread_id, T.name, date_created FROM threads T INNER JOIN topics D ON T.topic_id = D.topic_id " \
-    "WHERE D.name = :name")
+    "WHERE D.name = :name ORDER by date_created DESC")
     res = db.session.execute(query, {"name":topic})
     return res.fetchall()
 

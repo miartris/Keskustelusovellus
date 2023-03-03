@@ -7,7 +7,8 @@
 </div>
 <ul>
 {% for item in threads %}
-    <a href="{{ url_for('thread', topic=topic, id=item[0]) }}">{{ item[1] }}</a> created at {{ item[2] }}
+    <a href="{{ url_for('thread', topic=topic, id=item[0]) }}">{{ item[1] }}</a> 
+     created at {{ item[2].strftime('%Y-%m-%d %H.%M.%S') }}
     <br>
 {% endfor %}
 </ul>
