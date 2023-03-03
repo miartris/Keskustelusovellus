@@ -1,7 +1,19 @@
 {% extends "layout.html" %}
-{% for post in posts}
-<li>
-    {{ post.content }}
-</li>
 {% block content %}
+{% for post in posts %}
+<li>
+     <b>{{ post[0] }}</b>
+     <p>{{ post[1] }}</p>
+</li>
+{% endfor %}
+{% if session["username"] %}
+<div>
+    <form action="" id="new_post" method="POST">
+        <label for="new_post">Create a new post</label>
+        <textarea type="text" name="content" placeholder="text"></textarea>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <br>
+        <input type="submit" value="Send"></input>
+    </form>
+{% endif %}
 {% endblock %}

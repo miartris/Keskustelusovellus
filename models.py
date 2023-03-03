@@ -26,8 +26,9 @@ def create_new_user(name: str, password: str):
 
 def get_user_id(name: str):
     query = text("SELECT user_id FROM users WHERE username = :name")
-    res = db.session.execute(query, {"name":name})
-    return res.fetchone()
+    res = db.session.execute(query, {"name":name}).fetchone()
+    val = res[0] if res else None
+    return val
     
 def create_new_topic(name: str):
     query = text("INSERT INTO topics (name) VALUES (:name) ON CONFLICT DO NOTHING")
@@ -37,7 +38,7 @@ def create_new_topic(name: str):
 def get_topic(name: str):
     query = text("SELECT name FROM topics WHERE name = :name")
     res = db.session.execute(query, {"name":name})
-    return res.fetchone()
+    return res.fetchone()[0]
 
 def get_all_topics():
     query = text("SELECT name FROM topics")
@@ -60,7 +61,7 @@ def get_all_threads(topic: str):
 
 def get_all_posts(thread_id: int):
     query = text("SELECT username, content, name FROM posts P, threads T, users U " \
-    "WHERE P.creator_id = U.user_id AND T.thread_id = :thread_id")
+    "WHERE P.creator_id = U.user_id AND P.thread_id = :thread_id AND T.thread_id = :thread_id")
     res = db.session.execute(query, {"thread_id":thread_id})
     return res.fetchall() 
 
@@ -69,8 +70,8 @@ def get_thread_id(name:str):
     res = db.session.execute(query, {"name":name})
     return res.fetchone()[0]
 
-def create_new_post(content: str, user_id: int, thread: str):
+def create_new_post(content: str, user_id: int, thread_id: int):
     query = text("INSERT INTO posts (creator_id, thread_id, content)" \
-    "SELECT :user_id, thread_id, :content FROM threads T where T.name = :thread")
-    db.session.execute(query, {"user_id":user_id, "content":content, "thread":thread})
+    "SELECT :user_id, thread_id, :content FROM threads T where T.thread_id = :thread_id")
+    db.session.execute(query, {"user_id":user_id, "content":content, "thread_id":thread_id})
     db.session.commit()

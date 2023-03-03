@@ -32,10 +32,6 @@ def register():
             flash("Name must be between 3 and 25 characters long and contain no whitespace", "is_error")
             return redirect("/login")
 
-        if (len(name) < 3 or len(name) > 25 or len(name) != len(name_stripped)):
-            flash("Name must be between 3 and 25 characters long and contain no whitespace", "is_error")
-            return redirect("/login")
-
         if (len(password) < 3 or len(password) != len(password.strip())):
             flash("Password must be longer than three characters and contain no whitespace", "is_error")
             return redirect("/login")
@@ -58,7 +54,9 @@ def login():
   
         if user["is_user"]:
             session["username"] = name
-            session["user_id"] = models.get_user_id()
+            res =  models.get_user_id(session.get("username"))
+            print(f"{res = }")
+            session["user_id"] = res
             session["csrf_token"] = secrets.token_hex(16)
             flash("Login successful", "is_success")
             return redirect("/")
@@ -93,15 +91,32 @@ def topic(name):
             abort(403)
         models.create_new_thread(thread_title, name, session.get("username"))
         id = models.get_thread_id(thread_title)
-
+        models.create_new_post(thread_content, session.get("user_id"), id)
         return(redirect(f"/{name}/{id}"))
     
 @app.route("/<string:topic>/<int:id>", methods=["GET", "POST"])
 def thread(topic, id):
     if request.method == "GET":
         posts = models.get_all_posts(id)
-        return render_template("thread.html", topic=topic, posts=posts)
+        return render_template("thread.html", topic=topic, id=id, posts=posts)
     if request.method == "POST":
-        models.create_new_post()
+        content = request.form["content"]
+        req_csrf = request.form["csrf_token"]
+        if validate_post_request(req_csrf):
+            models.create_new_post(content, session.get("user_id"), id)
+            return redirect(f"/{topic}/{id}")
+        else:
+         abort(403)
     
+def validate_post_request(req_csrf: int):
+    return session.get("username") and req_csrf == session.get("csrf_token")
     
+@app.route("/users/<string:username>")
+def profile(username):
+    if models.get_user_id(username):
+        return render_template("profile.html", username=username)
+    else:
+        abort(404)
+    
+def check_csrf_token(req_token):
+    return req_token != session.get("csrf_token")
