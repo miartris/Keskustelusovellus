@@ -71,6 +71,7 @@ def login():
 def logout():
     del session["username"]
     del session["csrf_token"]
+    del session["user_id"]
     flash("Logout successful", "is_success")
     return redirect(url_for("index"))
 
@@ -83,7 +84,6 @@ def topic(name):
         else:
             abort(404)
     if request.method == "POST":
-        print(request)
         thread_title = request.form["title"]
         thread_content = request.form["content"]
         request_csrf = request.form["csrf_token"]
@@ -110,13 +110,38 @@ def thread(topic, id):
     
 def validate_post_request(req_csrf: int):
     return session.get("username") and req_csrf == session.get("csrf_token")
-    
-@app.route("/users/<string:username>")
+
+def validate_post_content(content: str, min_length: int, max_length: int):
+    return len(content) <= max_length and len(content) >= min_length and content
+
+@app.route("/users/<string:username>", methods=["GET", "POST"])
 def profile(username):
-    if models.get_user_id(username):
-        return render_template("profile.html", username=username)
-    else:
+    if request.method == "GET":
+        if models.get_user_id(username):
+            #models.fetch_profile_data()
+            return render_template("profile.html", username=username)
+        else:
+            abort(404)
+    if request.method == "POST":
+        content = request.form["description"]
+        if validate_post_request(session["csrf_token"]) \
+        and validate_post_content(content, 1, 500):
+            models.update_user_description(session["user_id"], content)
+        else:
+            flash("Description must be between 1 and 500 letters long", "alert-danger")
+            return(redirect(url_for('profile', username=username)))
+
+@app.route("/users/<string:username>/images", methods=["GET", "POST"])
+def profile_image(username):
+    if request.method == "GET":
         abort(404)
-    
-def check_csrf_token(req_token):
-    return req_token != session.get("csrf_token")
+    if request.method == "POST":
+        if username == session["username"]:
+            file = request.files["file"]
+            print("name", file.filename)
+            print("length", len(file.read()), "bytes")
+            data = file.read()
+            models.upload_image(data, file.filename)
+        else:
+            abort(403)
+

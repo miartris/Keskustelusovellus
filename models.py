@@ -60,8 +60,9 @@ def get_all_threads(topic: str):
     return res.fetchall()
 
 def get_all_posts(thread_id: int):
-    query = text("SELECT username, content, name FROM posts P, threads T, users U " \
-    "WHERE P.creator_id = U.user_id AND P.thread_id = :thread_id AND T.thread_id = :thread_id")
+    query = text("SELECT username, content, name, P.date_created FROM posts P, threads T, users U " \
+    "WHERE P.creator_id = U.user_id AND P.thread_id = :thread_id AND T.thread_id = :thread_id " \
+    "ORDER BY P.date_created ASC")
     res = db.session.execute(query, {"thread_id":thread_id})
     return res.fetchall() 
 
@@ -71,7 +72,24 @@ def get_thread_id(name:str):
     return res.fetchone()[0]
 
 def create_new_post(content: str, user_id: int, thread_id: int):
-    query = text("INSERT INTO posts (creator_id, thread_id, content)" \
-    "SELECT :user_id, thread_id, :content FROM threads T where T.thread_id = :thread_id")
+    query = text("INSERT INTO posts (creator_id, thread_id, content, date_created, upvotes)" \
+    "SELECT :user_id, thread_id, :content, NOW(), 0 FROM threads T where T.thread_id = :thread_id")
     db.session.execute(query, {"user_id":user_id, "content":content, "thread_id":thread_id})
     db.session.commit()
+
+def update_user_description(user_id: int, description: str):
+    query = text("UPDATE users SET description = :description WHERE user_id = :id")
+    db.session.execute(query, {"description":description, "id":user_id})
+    db.session.commit()
+
+def upload_image(data: bytearray, name: str):
+    query = text("INSERT into images (data) VALUES(:data)")
+    db.session.execute(query, {"data":data})
+    db.session.commit()
+
+def associate_img_to_user(id: int):
+    query = text("INSERT INTO user_images (user_id, image_id) VALUES (:uid, :iid)")
+    db.session.execute(query)
+
+def get_profile_data(id: int):
+    query = text("FROM users SELECT")

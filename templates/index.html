@@ -1,14 +1,15 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h1>Keskustelusovellus</h1>
-<h2>topics</h2>
-<div class="topics">
-    <ul>
+<h2 class="display-4 text-dark">topics</h2>
+<div class="row">
+    <ul class="list-group">
         {% for item in topics %}
-        <li>
-            <a href="{{ url_for('topic', name=item) }}">{{ item }}</a>
-        </li>
+        <div class="card">
+            <li class="list-group-item">
+                <a href="{{ url_for('topic', name=item) }}">{{ item }}</a>
+            </li>
+        </div>
         {% endfor %}
     </ul>
 </div>

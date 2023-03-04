@@ -2,6 +2,24 @@
 {% block content %}
 <h2>Friends: </h2>
 <h2>Amount of posts: </h2>
-<h2>Amount of likes</h2>
-<h2>Private messages</h2>
+<h2>Amount of likes: </h2>
+<h2>Private messages: </h2>
+{% if session.username == username %}
+    {% if description %}
+        <p>{{ description }} </p>
+    {% else %}
+        <form action="{{ url_for('profile', username=session.username) }}" method="POST">
+            Enter a description: <textarea type="text" name="description" id="description" placeholder="description"></textarea>
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="hidden" name="form_id" value="desc_form">
+            <br>
+            <br>
+            <input type="submit" value="Send"></input>
+        </form>
+        <form action="{{ url_for('profile_image', username=session.username) }}" method="POST" enctype="multipart/form-data">
+             Upload a profile picture: <input type="file" name="file">
+             <input type="submit" value="Send"></input>
+        </form>
+    {% endif %}
+{% endif %}
 {% endblock %}

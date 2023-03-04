@@ -1,10 +1,12 @@
 {% extends "layout.html" %}
 {% block content %}
 {% for post in posts %}
-<li>
-     <b><a href="{{ url_for('profile', username=post[0]) }}">{{ post[0] }}</a></b>
-     <p>{{ post[1] }}</p>
-</li>
+<ul class="list-group">
+    <li class="border rounder list-group-item">
+        <b><a href="{{ url_for('profile', username=post[0]) }}">{{ post[0] }}</a></b>
+        <p>{{ post[1] }}</p>
+    </li>
+</ul>
 {% endfor %}
 {% if session["username"] %}
 <div>
