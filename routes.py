@@ -172,9 +172,11 @@ def profile_image(username):
             file = request.files["file"]
             filename = file.filename
             if not file or not filename.endswith(".jpg"):
-                flash("Enter a JPG-file", "alert-danger")
+                flash("Enter a JPG-file max 10mb", "alert-danger")
                 return redirect(f"/users/{username}")
             data = file.read()
+            if len(data) > 1024 * 10**5:
+                flash("File larger than 10mb", "alert-danger")
             upload_profile_image(data, session["user_id"], filename)
             associate_img_to_user(session["user_id"])
             return(redirect(request.referrer))
@@ -190,6 +192,8 @@ def add_upvote(id: int):
 def description(username):
     csrf = request.form["csrf_token"]
     data = request.form["description"]
+    if username != session["username"]:
+        abort(403)
     if validate_post_content(data, 1, 200) and validate_post_request(csrf):
         update_user_description(session["user_id"], data)
         return redirect(request.referrer)

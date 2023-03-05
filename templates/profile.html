@@ -4,9 +4,9 @@
     <div class="">
         <h2>Profile of {{data[0]}}</h2>
     </div>
-    <div class="row">
+    <div class="row align-items-between">
         <div class="col-sm d-flex flex-column">
-            <div class="card mb-3">
+            <div class="card">
                 <h4 class="card-header">More about {{ data[0] }}</h4>
                 <p class="card-body">
                     {% if data[1] %}
@@ -26,7 +26,7 @@
             </form>
             {% endif %}
         </div>
-        <div class="d-flex col-sm mb-auto">
+        <div class="d-flex col-sm mb-auto border">
             <table class="table">
                 <thead>
                   <tr>
@@ -46,21 +46,21 @@
                 </tbody>
               </table>
         </div>
-        <div class="col-sm d-flex flex-column">
-
-            {% if pimg %}
-            <img src="data:image/jpg;base64, {{pimg}}" alt="Something went wrong" />
-            {% else %}
-            <img src="/static/question-circle.svg" >
-            {% endif %}
-            {% if session.username == username %}
-            <form class="form-control mt-1" action="{{ url_for('profile_image', username=session.username) }}" method="POST" enctype="multipart/form-data">
-                <label for="img">Upload a profile picture:</label> <input type="file" id="img" name="file">
-                <input class="form-item" type="submit" value="Send"></input>
-            </form>
-            {% endif %}
-        </div>
     </div>
+    <div class="d-flex flex-column align-items-center mt-5">
+        {% if pimg %}
+        <img src="data:image/jpg;base64, {{pimg}}" alt="Something went wrong" />
+        {% else %}
+        <img style="width: 50%; height: 50%;" src="/static/question-circle.svg" >
+        {% endif %}
+        {% if session.username == username %}
+        <form class="form-control mt-1" action="{{ url_for('profile_image', username=session.username) }}" method="POST" enctype="multipart/form-data">
+            <label class="form-label" for="img">Upload a profile picture:</label> <input class="form-control" type="file" id="img" name="file">
+            <input type="submit" value="Send"></input>
+        </form>
+        {% endif %}
+    </div>
+
 </div>
 
 {% endblock %}
