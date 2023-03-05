@@ -73,6 +73,8 @@ def login():
             print(user)
             if user["admin"]:
                 session["admin"] = True
+            else:
+                session["admin"] = False
             flash("Login successful", "alert-success")
             return redirect("/")
         else:
@@ -87,6 +89,7 @@ def logout():
     del session["username"]
     del session["csrf_token"]
     del session["user_id"]
+    del session["admin"]
     flash("Logout successful", "alert-success")
     return redirect(url_for("index"))
 
