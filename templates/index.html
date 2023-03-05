@@ -1,13 +1,14 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2 class="display-4 text-dark">topics</h2>
-<div class="row">
+<h2 class="text-dark text-center">topics</h2>
+<div class="row d-flex justify-content-center align-items-center">
     <ul class="list-group">
         {% for item in topics %}
         <div class="card">
-            <li class="list-group-item">
-                <a href="{{ url_for('topic', name=item) }}">{{ item }}</a>
+            <li class="list-group-item card-body">
+                <a class="" href="{{ url_for('topic', name=item[0]) }}">{{ item[0] }}</a>
+                <small>active threads: {{ item[1] }}</small>
             </li>
         </div>
         {% endfor %}

@@ -2,15 +2,17 @@
 {% block content %}
 <h2>Create a new account</h2>
 <form action="/register" method="POST">
-    Name:
-    <input type="text" name="reg_name">
-    <br>
-    Password:
-    <input type="password" name="reg_password">
-    <br>
-    Confirm password:
-    <input type="password" name="reg_password_check">
-    <br>
-    <input type="submit" value="Register">
+    <div class="form-group col">
+        <label for="reg_name">Name:</label>
+        <input class="form-control" id="reg_name" type="text" name="reg_name">
+        <br>
+        <label for="pw">Password:</label>
+        <input id="pw" class="form-control" type="password" name="reg_password">
+        <br>
+        <label for="cpw">Confirm password:</label>
+        <input type="password" class="form-control" id="cpw" name="reg_password_check">
+        <br>
+        <input class="btn-light" type="submit" value="Register">
+    </div>
 </form>
 {% endblock %}

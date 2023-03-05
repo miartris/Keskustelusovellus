@@ -13,7 +13,7 @@ def not_found(e):
 
 @app.route("/")
 def index():
-    topics = models.get_all_topics()
+    topics = models.get_topics_and_threads()
     return render_template("index.html", topics=topics)
 
 @app.route("/register", methods=["GET", "POST"])
@@ -107,12 +107,6 @@ def thread(topic, id):
             return redirect(f"/{topic}/{id}")
         else:
          abort(403)
-    
-def validate_post_request(req_csrf: int):
-    return session.get("username") and req_csrf == session.get("csrf_token")
-
-def validate_post_content(content: str, min_length: int, max_length: int):
-    return len(content) <= max_length and len(content) >= min_length and content
 
 @app.route("/users/<string:username>", methods=["GET", "POST"])
 def profile(username):
@@ -145,3 +139,8 @@ def profile_image(username):
         else:
             abort(403)
 
+def validate_post_request(req_csrf: int):
+    return session.get("username") and req_csrf == session["csrf_token"]
+
+def validate_post_content(content: str, min_length: int, max_length: int):
+    return len(content) <= max_length and len(content) >= min_length and content
