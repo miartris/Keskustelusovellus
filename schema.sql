@@ -38,17 +38,20 @@ CREATE TABLE private_messages (
 
 CREATE TABLE images (
     image_id SERIAL PRIMARY KEY, 
+    filename TEXT,
     data BYTEA
 );
 
 CREATE TABLE user_images (
     user_id INTEGER REFERENCES users(user_id),
     image_id INTEGER REFERENCES images(image_id),
+    filename TEXT,
     PRIMARY KEY (user_id, image_id)
 );
 
 CREATE TABLE post_images (
     post_id INTEGER REFERENCES posts(post_id),
     image_id INTEGER REFERENCES images(image_id),
+    filename text,
     PRIMARY KEY (post_id, image_id)
 );

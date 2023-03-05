@@ -1,8 +1,9 @@
 from app import app
-from flask import render_template, redirect, url_for, request, session, flash, abort
+from flask import render_template, redirect, url_for, request, session, flash, abort, make_response
 from os import getenv
 import models
 import secrets
+import base64
 #import requests
 
 app.secret_key = getenv("SECRET_KEY")
@@ -71,7 +72,6 @@ def login():
             res =  models.get_user_id(session.get("username"))
             session["user_id"] = res
             session["csrf_token"] = secrets.token_hex(16)
-            print(user)
             if user["admin"]:
                 session["admin"] = True
             else:
@@ -139,13 +139,16 @@ def profile(username):
         id = models.get_user_id(username)
         if id:
             data = models.get_profile_data(id)
-            return render_template("profile.html", username=username, data=data)
+            imgdata = models.get_image_by_user(id)
+            img = convert_img_to_bas64str(imgdata)
+            return render_template("profile.html", username=username, data=data, pimg=img)
         else:
             abort(404)
     if request.method == "POST":
         content = request.form["description"]
         if validate_post_request(session["csrf_token"]) \
-        and validate_post_content(content, 1, 500):
+        and validate_post_content(content, 1, 500) \
+        and username == session["username"]:
             models.update_user_description(session["user_id"], content)
             return redirect(url_for('profile', username=username))
         else:
@@ -159,10 +162,11 @@ def profile_image(username):
     if request.method == "POST":
         if username == session["username"]:
             file = request.files["file"]
-            print("name", file.filename)
-            print("length", len(file.read()), "bytes")
+            filename = file.name
             data = file.read()
-            models.upload_image(data, file.filename)
+            models.upload_profile_image(data, session["user_id"], filename)
+            models.associate_img_to_user(session["user_id"])
+            return(redirect(request.referrer))
         else:
             abort(403)
 
@@ -171,8 +175,28 @@ def add_upvote(id: int):
     models.add_upvote(id, 1)
     return(redirect(request.referrer))
 
+@app.route("/test")
+def images():
+    imgdata = models.get_images()
+   
+@app.route("/users/<string:username>/description", methods=["POST"])
+def description(username):
+    csrf = request.form["csrf_token"]
+    data = request.form["description"]
+    if validate_post_content(data, 1, 200) and validate_post_request(csrf):
+        models.update_user_description(session["user_id"], data)
+        return redirect(request.referrer)
+    else:
+        flash("Description must be between 1-200 letters", "alert-danger")
+        return redirect(request.referrer)
+
 def validate_post_request(req_csrf: int):
     return session.get("username") and req_csrf == session["csrf_token"]
 
 def validate_post_content(content: str, min_length: int, max_length: int):
-    return len(content) <= max_length and len(content) >= min_length and content
+    return len(content) <= max_length and len(content) >= min_length and content.rstrip != 0
+
+def convert_img_to_bas64str(data: bytearray):
+    img_in_base64 = base64.b64encode(data[0]).decode("utf-8") if data else None
+    return img_in_base64
+

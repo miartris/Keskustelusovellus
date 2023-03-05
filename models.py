@@ -85,18 +85,23 @@ def update_user_description(user_id: int, description: str):
     db.session.execute(query, {"description":description, "id":user_id})
     db.session.commit()
 
-def upload_image(data: bytearray, name: str):
-    query = text("INSERT into images (data) VALUES(:data)")
-    db.session.execute(query, {"data":data})
+def upload_profile_image(data: bytearray, id: int, filename:str):
+    query = text("INSERT into images (data, filename) VALUES(:data, :filename)")
+    db.session.execute(query, {"data":data, "filename":filename})
+    db.session.commit()
+    query2 = text("INSERT INTO user_images (user_id, image_id) SELECT :uid, image_id " \
+                 "FROM images ORDER BY image_id DESC LIMIT 1")
+    db.session.execute(query2, {"uid":id})
     db.session.commit()
 
 def associate_img_to_user(id: int):
-    query = text("INSERT INTO user_images (user_id, image_id) VALUES (:uid, :iid)")
-    db.session.execute(query)
+    pass
 
 def get_profile_data(id: int):
-    query = text("SELECT name, COUNT(post_id), SUM(upvotes) FROM users LEFT JOIN" \
-                 "posts ON users.user_id = posts.creator_id GROUP BY users.user_id")
+    query = text("SELECT username, description, COUNT(post_id), SUM(upvotes) FROM users LEFT JOIN " \
+                 "posts ON users.user_id = posts.creator_id WHERE users.user_id = :id GROUP BY users.user_id")
+    res = db.session.execute(query, {"id":id})
+    return res.fetchone()
 
 def get_threads_per_topic():
     query = text("SELECT thread_id, count(thread_id) FROM threads GROUP BY topic_id")
@@ -127,5 +132,16 @@ def get_total_statistics():
     query = text("SELECT COUNT(DISTINCT user_id), COUNT(DISTINCT T.thread_id), COUNT(DISTINCT post_id) " \
                  "FROM users U, THREADS T, posts P")
     res = db.session.execute(query)
+    return res.fetchone()
+
+def get_image(id: int):
+    query = text("SELECT image_id, data FROM images where image_id = :id ORDER BY image_id DESC LIMIT 1")
+    res = db.session.execute(query, {"id":id})
+    return res.fetchone()
+
+def get_image_by_user(id: int):
+    query = text("SELECT data from images I LEFT JOIN user_images U on I.image_id = U.image_id WHERE U.user_id = :id " \
+                 "ORDER BY I.image_id DESC LIMIT 1")
+    res = db.session.execute(query, {"id":id})
     return res.fetchone()
 

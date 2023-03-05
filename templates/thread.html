@@ -2,7 +2,7 @@
 {% block content %}
 {% for post in posts %}
 <ul class="list-group">
-    <li class="border rounded list-group-item mb-2 d-flex flex-column justify-content-center text-break">
+    <li class="border rounded list-group-item mb-2 d-flex flex-column text-break">
         <div class="d-flex mb-auto">
         <div class="mr-auto"><b>
             <a href="{{ url_for('profile', username=post[0]) }}" class="text-dark">{{ post[0] }}</a></b>
@@ -11,15 +11,15 @@
             <small class="" >{{ post[3].strftime('%Y-%m-%d %H.%M.%S') }}</small>
         </div>
         </div>
-        <div class="py-2 mt-2">{{ post[1] }}</div>  
+        <div class="mt-4">{{ post[1] }}</div>  
         <br> 
-            <form class="" action="{{ url_for('add_upvote', id=post[5])}}" method="POST">
-            <button type="submit" class="btn" style="background-color: transparent; outline: none; border:0; box-shadow: none;">
+            <form class="mt-auto align-items-start" action="{{ url_for('add_upvote', id=post[5])}}" method="POST">
+            <button type="submit" class="btn" style="background-color: transparent; outline: none; border:0; box-shadow: none; padding:0%;">
                 <img style="padding-bottom: 5px;" src="/static/hand-thumbs-up.svg">
                 <span>{{ post[4] }}</span> 
             </button>
             </form> 
-    </li>
+        </li>
 </ul>
 {% endfor %}
 {% if session["username"] %}

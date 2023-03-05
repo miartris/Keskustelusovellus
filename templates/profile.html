@@ -1,25 +1,66 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Friends: </h2>
-<h2>Amount of posts: </h2>
-<h2>Amount of likes: </h2>
-<h2>Private messages: </h2>
-{% if session.username == username %}
-    {% if description %}
-        <p>{{ description }} </p>
-    {% else %}
-        <form action="{{ url_for('profile', username=session.username) }}" method="POST">
-            Enter a description: <textarea type="text" name="description" id="description" placeholder="description"></textarea>
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-            <input type="hidden" name="form_id" value="desc_form">
-            <br>
-            <br>
-            <input type="submit" value="Send"></input>
-        </form>
-        <form action="{{ url_for('profile_image', username=session.username) }}" method="POST" enctype="multipart/form-data">
-             Upload a profile picture: <input type="file" name="file">
-             <input type="submit" value="Send"></input>
-        </form>
-    {% endif %}
-{% endif %}
+<div class="container">
+    <div class="">
+        <h2>Profile of {{data[0]}}</h2>
+    </div>
+    <div class="row">
+        <div class="col-sm d-flex flex-column">
+            <div class="card mb-3">
+                <h4 class="card-header">More about {{ data[0] }}</h4>
+                <p class="card-body">
+                    {% if data[1] %}
+                    {{ data[1] }}
+                    {% else %}
+                    No description (yet)
+                    {% endif %}
+                </p>
+            </div>
+            {% if session.username == username %}
+            <form class="form-group" action="{{ url_for('description', username=session.username) }}" method="POST">
+                <label for="desc">Enter or edit description:</label> 
+                <textarea class="form-control" id="desc" type="text" name="description" id="description" placeholder="description"></textarea>
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <input type="hidden" name="form_id" value="desc_form">
+                <input type="submit" value="Send"></input>
+            </form>
+            {% endif %}
+        </div>
+        <div class="d-flex col-sm mb-auto">
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Total #</th>
+                    <th scope="col">Item</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ data[2] }}</td>
+                    <td>Posts</td>
+                  </tr>
+                  <tr>
+                    <td>{{ data[3] }}</td>
+                    <td>Upvotes</td>
+                  </tr>
+                </tbody>
+              </table>
+        </div>
+        <div class="col-sm d-flex flex-column">
+
+            {% if pimg %}
+            <img src="data:image/jpg;base64, {{pimg}}" alt="Something went wrong" />
+            {% else %}
+            <img src="/static/question-circle.svg" >
+            {% endif %}
+            {% if session.username == username %}
+            <form class="form-control mt-1" action="{{ url_for('profile_image', username=session.username) }}" method="POST" enctype="multipart/form-data">
+                <label for="img">Upload a profile picture:</label> <input type="file" id="img" name="file">
+                <input class="form-item" type="submit" value="Send"></input>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
 {% endblock %}
