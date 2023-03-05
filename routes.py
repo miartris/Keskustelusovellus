@@ -15,7 +15,8 @@ def not_found(e):
 def index():
     if request.method == "GET":
         topics = models.get_topics_and_threads()
-        return render_template("index.html", topics=topics)
+        stats = models.get_total_statistics()
+        return render_template("index.html", topics=topics, data=stats)
     if request.method=="POST":
         if not session["admin"]:
             abort(403)

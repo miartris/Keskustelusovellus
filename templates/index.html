@@ -1,9 +1,12 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2 class="text-dark text-center">topics</h2>
-<div class="row d-flex justify-content-center align-items-center">
+<div class="row d-flex ml-auto justify-content-center">
+    <div class="mr-auto" style="visibility: hidden;">
+
+    </div>
     <ul class="list-group">
+        <h2 class="text-dark text-center">topics</h2>
         {% for item in topics %}
         <div class="card">
             <li class="list-group-item card-body">
@@ -13,9 +16,20 @@
         </div>
         {% endfor %}
     </ul>
+    <div class="d-inline-flex ml-auto mb-auto flex-column border p-2 mr-3">
+        <h2>Stats</h4>
+        <br>
+        <span>Total users: {{ data[0] }} </span>
+        <br>
+        <span>Total threads: {{ data[1] }}</span>
+        <br>
+        <span>Total posts: {{ data[2] }}</span>
+    </div>
+    
 </div>
+
 {% if session.admin %}
-<div class="mt-5 form-group d-flex justify-content-center align-items-center flex-column text-center">
+<div class="mt-5 pr-5 mr-5 form-group d-flex justify-content-center align-items-center flex-column text-center">
     <form action="" id="new_topic" method="POST">
         <label for="new_topic">Create a new topic</label>
         <input class="form-control mb-2" type="text" id=new_topic name="title" placeholder="title"></input>

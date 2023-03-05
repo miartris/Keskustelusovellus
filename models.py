@@ -122,3 +122,10 @@ def add_upvote(id: int, increment: int):
     query = text("UPDATE posts SET upvotes = upvotes + 1 where post_id = :id")
     db.session.execute(query, {"id":id})
     db.session.commit()
+
+def get_total_statistics():
+    query = text("SELECT COUNT(DISTINCT user_id), COUNT(DISTINCT T.thread_id), COUNT(DISTINCT post_id) " \
+                 "FROM users U, THREADS T, posts P")
+    res = db.session.execute(query)
+    return res.fetchone()
+
