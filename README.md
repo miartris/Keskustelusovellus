@@ -21,16 +21,11 @@ Käyttäjätyyppejä on kaksi: **ylläpitäjä** ja **peruskäyttäjä**.
 - Profiilissa on vähän tilastotietoa ja käyttäjän esittely sekä kuva. Jos näitä ei ole luotu näkyvillä on vakioarvot
 - Käyttäjä voi omassa profiilissaan ladata profiilikuvan ja luoda esittelyn tai muokata sitä
 
-## Lopullisia ominaisuuksia:
+## Mitä ei ehditty toteuttaa:
 
-- Käyttäjätilin luominen, sisään- ja uloskirjautuminen
-- Lista alueista, alueelle siirtyminen tuo näkyviin listan viestiketjuista joihin siirtyminen tuo näkyville viestit ja kentän viestin kirjoittamiseen
-- Käyttäjä voi luoda viestiketjun tai kirjoittaa ketjuun viestin, ja poistaa omia luomuksiaan. Ylläpitäjä voi poistaa kaikkea sisältöä
-- Viestejä voidaan "peukuttaa"
-- Alueille ja ketjuille on viestimäärät ja aikaleima viimeisimmästä päivityksestä
-- Käyttäjillä on profiilit, jotka voivat sisältää esittelyn ja profiilikuvan
-- Käyttäjät voivat lähettää toisilleen yksityisviestejä
-- Keskustelualueen viestiketjuja ja viestejä voidaan etsiä hakusanalla
+- Poistotoiminnallisuus
+- Käyttäjien väliset yksityisviestit
+- Viestien haku avainsanalla
 
 ## Käynnistysohjeet
 
