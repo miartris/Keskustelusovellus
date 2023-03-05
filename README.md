@@ -26,6 +26,7 @@ Käyttäjätyyppejä on kaksi: **ylläpitäjä** ja **peruskäyttäjä**.
 - Poistotoiminnallisuus
 - Käyttäjien väliset yksityisviestit
 - Viestien haku avainsanalla
+- Kuvaviestit
 
 ## Käynnistysohjeet
 
