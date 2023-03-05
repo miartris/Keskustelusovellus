@@ -135,9 +135,10 @@ def thread(topic, id):
 @app.route("/users/<string:username>", methods=["GET", "POST"])
 def profile(username):
     if request.method == "GET":
-        if models.get_user_id(username):
-            #models.fetch_profile_data()
-            return render_template("profile.html", username=username)
+        id = models.get_user_id(username)
+        if id:
+            data = models.get_profile_data(id)
+            return render_template("profile.html", username=username, data=data)
         else:
             abort(404)
     if request.method == "POST":
@@ -145,6 +146,7 @@ def profile(username):
         if validate_post_request(session["csrf_token"]) \
         and validate_post_content(content, 1, 500):
             models.update_user_description(session["user_id"], content)
+            return redirect(url_for('profile', username=username))
         else:
             flash("Description must be between 1 and 500 letters long", "alert-danger")
             return(redirect(url_for('profile', username=username)))
@@ -162,6 +164,11 @@ def profile_image(username):
             models.upload_image(data, file.filename)
         else:
             abort(403)
+
+@app.route("/posts/<int:id>/upvotes", methods=["POST"])
+def add_upvote(id: int):
+    models.add_upvote(id, 1)
+    return(redirect(request.referrer))
 
 def validate_post_request(req_csrf: int):
     return session.get("username") and req_csrf == session["csrf_token"]

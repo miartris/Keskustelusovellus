@@ -63,7 +63,7 @@ def get_all_threads(topic: str):
     return res.fetchall()
 
 def get_all_posts(thread_id: int):
-    query = text("SELECT username, content, name, P.date_created FROM posts P, threads T, users U " \
+    query = text("SELECT username, content, name, P.date_created, upvotes, P.post_id FROM posts P, threads T, users U " \
     "WHERE P.creator_id = U.user_id AND P.thread_id = :thread_id AND T.thread_id = :thread_id " \
     "ORDER BY P.date_created ASC")
     res = db.session.execute(query, {"thread_id":thread_id})
@@ -95,7 +95,8 @@ def associate_img_to_user(id: int):
     db.session.execute(query)
 
 def get_profile_data(id: int):
-    query = text("FROM users SELECT")
+    query = text("SELECT name, COUNT(post_id), SUM(upvotes) FROM users LEFT JOIN" \
+                 "posts ON users.user_id = posts.creator_id GROUP BY users.user_id")
 
 def get_threads_per_topic():
     query = text("SELECT thread_id, count(thread_id) FROM threads GROUP BY topic_id")
@@ -116,3 +117,8 @@ def get_topics_and_threads():
                 "GROUP BY H.topic_id, T.name ORDER BY amt_of_threads DESC")
     res = db.session.execute(query)
     return res.fetchall()
+
+def add_upvote(id: int, increment: int):
+    query = text("UPDATE posts SET upvotes = upvotes + 1 where post_id = :id")
+    db.session.execute(query, {"id":id})
+    db.session.commit()
