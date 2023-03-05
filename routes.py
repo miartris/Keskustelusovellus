@@ -1,7 +1,9 @@
 from app import app
 from flask import render_template, redirect, url_for, request, session, flash, abort, make_response
 from os import getenv
-import models
+from models.forum import *
+from models.stats import *
+from models.users import *
 import secrets
 import base64
 #import requests
@@ -15,15 +17,18 @@ def not_found(e):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "GET":
-        topics = models.get_topics_and_threads()
-        stats = models.get_total_statistics()
+        topics = get_topics_and_threads()
+        stats = get_total_statistics()
         return render_template("index.html", topics=topics, data=stats)
     if request.method=="POST":
         if not session["admin"]:
             abort(403)
         else:
             title = request.form["title"]
-            models.create_new_topic(title)
+            if not validate_post_content(title, 1, 40) and validate_post_request(request.form["csrf_token"]):
+                flash("min 1 max 40 letters", "alert-danger")
+                return redirect("/")
+            create_new_topic(title)
             flash("Success", "alert-success")
             return redirect("/")
 
@@ -45,15 +50,18 @@ def register():
         
         if (len(name) < 3 or len(name) > 25 or len(name) != len(name_stripped)):
             flash("Name must be between 3 and 25 characters long and contain no whitespace", "alert-danger")
-            return redirect("/login")
+            return redirect("/register")
 
         if (len(password) < 3 or len(password) != len(password.strip())):
             flash("Password must be longer than three characters and contain no whitespace", "alert-danger")
-            return redirect("/login")
+            return redirect("/register")
 
-        models.create_new_user(name, password, as_admin)
-        flash("Registered successfully", "alert-success")
-        return redirect("/login")
+        res = create_new_user(name, password, as_admin)
+        if res:
+            flash("Registered successfully", "alert-success")
+            return redirect("/login")
+        else:
+            flash("Registration failed, name could be in use", "alert-danger")
 
     return render_template("register.html")
 
@@ -62,14 +70,14 @@ def login():
     if request.method == "POST":
         name = request.form["login_name"]
         password = request.form["login_password"]
-        user = models.check_user_data(name, password)
+        user = check_user_data(name, password)
         if session.get("username"):
             flash("already logged in", "is_error")
             return redirect(url_for("login"))
   
         if user["is_user"]:
             session["username"] = name
-            res =  models.get_user_id(session.get("username"))
+            res =  get_user_id(session.get("username"))
             session["user_id"] = res
             session["csrf_token"] = secrets.token_hex(16)
             if user["admin"]:
@@ -97,8 +105,8 @@ def logout():
 @app.route("/<string:name>", methods=["GET", "POST"])
 def topic(name):
     if request.method == "GET":
-        if models.get_topic(name):
-            threads = models.get_all_threads(name)
+        if get_topic(name):
+            threads = get_all_threads(name)
             return render_template("topic.html", topic=name, threads=threads)
         else:
             abort(404)
@@ -114,21 +122,21 @@ def topic(name):
         if len(thread_title) > 50:
             flash("Title has to be smaller than 50 letters" "alert-danger")
             return(redirect(f"/{name}"))
-        models.create_new_thread(thread_title, name, session.get("username"))
-        id = models.get_thread_id(thread_title)
-        models.create_new_post(thread_content, session.get("user_id"), id)
+        create_new_thread(thread_title, name, session.get("username"))
+        id = get_thread_id(thread_title)
+        create_new_post(thread_content, session.get("user_id"), id)
         return(redirect(f"/{name}/{id}"))
     
 @app.route("/<string:topic>/<int:id>", methods=["GET", "POST"])
 def thread(topic, id):
     if request.method == "GET":
-        posts = models.get_all_posts(id)
+        posts = get_all_posts(id)
         return render_template("thread.html", topic=topic, id=id, posts=posts)
     if request.method == "POST":
         content = request.form["content"]
         req_csrf = request.form["csrf_token"]
         if validate_post_request(req_csrf):
-            models.create_new_post(content, session.get("user_id"), id)
+            create_new_post(content, session.get("user_id"), id)
             return redirect(f"/{topic}/{id}")
         else:
          abort(403)
@@ -136,10 +144,10 @@ def thread(topic, id):
 @app.route("/users/<string:username>", methods=["GET", "POST"])
 def profile(username):
     if request.method == "GET":
-        id = models.get_user_id(username)
+        id = get_user_id(username)
         if id:
-            data = models.get_profile_data(id)
-            imgdata = models.get_image_by_user(id)
+            data = get_profile_data(id)
+            imgdata = get_image_by_user(id)
             img = convert_img_to_bas64str(imgdata)
             return render_template("profile.html", username=username, data=data, pimg=img)
         else:
@@ -149,7 +157,7 @@ def profile(username):
         if validate_post_request(session["csrf_token"]) \
         and validate_post_content(content, 1, 500) \
         and username == session["username"]:
-            models.update_user_description(session["user_id"], content)
+            update_user_description(session["user_id"], content)
             return redirect(url_for('profile', username=username))
         else:
             flash("Description must be between 1 and 500 letters long", "alert-danger")
@@ -162,29 +170,28 @@ def profile_image(username):
     if request.method == "POST":
         if username == session["username"]:
             file = request.files["file"]
-            filename = file.name
+            filename = file.filename
+            if not file or not filename.endswith(".jpg"):
+                flash("Enter a JPG-file", "alert-danger")
+                return redirect(f"/users/{username}")
             data = file.read()
-            models.upload_profile_image(data, session["user_id"], filename)
-            models.associate_img_to_user(session["user_id"])
+            upload_profile_image(data, session["user_id"], filename)
+            associate_img_to_user(session["user_id"])
             return(redirect(request.referrer))
         else:
             abort(403)
 
 @app.route("/posts/<int:id>/upvotes", methods=["POST"])
 def add_upvote(id: int):
-    models.add_upvote(id, 1)
+    increment_upvote(id, 1)
     return(redirect(request.referrer))
 
-@app.route("/test")
-def images():
-    imgdata = models.get_images()
-   
 @app.route("/users/<string:username>/description", methods=["POST"])
 def description(username):
     csrf = request.form["csrf_token"]
     data = request.form["description"]
     if validate_post_content(data, 1, 200) and validate_post_request(csrf):
-        models.update_user_description(session["user_id"], data)
+        update_user_description(session["user_id"], data)
         return redirect(request.referrer)
     else:
         flash("Description must be between 1-200 letters", "alert-danger")
