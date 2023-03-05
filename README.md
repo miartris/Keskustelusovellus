@@ -5,24 +5,28 @@ Viestit voivat sisältää tekstin lisäksi myös pienen upotetun kuvatiedoston.
 
 Käyttäjätyyppejä on kaksi: **ylläpitäjä** ja **peruskäyttäjä**.
 
-## Sovelluksen nykytila
+## Sovelluksen lopputila
 
-- Yksi käyttäjätyyppi, peruskäyttäjä
+### Käyttäjä
+- Kaksi käyttäjätyyppiä, peruskäyttäjä ja ylläpitäjä
 - Sivulle voi rekisteröityä ja rekisteröidyttyä voi kirjautua sisään. Käyttäjä saa tietoa onnistumisista ja virheistä
 - Sisäänkirjautunut käyttäjä voi uloskirjautua
-- Etusivulla näytetään kaikki "topics" taulussa olevat aiheet
+### Foorumi
+- Etusivulla näytetään kaikki "topics" taulussa olevat aiheet ja vähän sivun tilastoja. Ylläpitäjät näkevät kaavakkeen, jolla aihealueen voi luoda
 - Aihealueen sisällä kirjautunut käyttäjä voi luoda viestiketjun. Kaikki aihealueen viestiketjut ja niiden luomisajankohdat listataan allekkain
+- Viestiketjun sisällä listataan kaikki viestit allekkain, viimeisen viestin jälkeen sisäänkirjautunut käyttäjä näkee kaavakkeen jolla voi luoda uuden viestin.
+- Viestejä voi peukuttaa
+### Profiili
+- Viestin yhteydessä näkyvästä käyttäjänimestä pääsee kyseisen käyttäjän profiiliin, navigointipalkista pääsee omaan profiiliin
+- Profiilissa on vähän tilastotietoa ja käyttäjän esittely sekä kuva. Jos näitä ei ole luotu näkyvillä on vakioarvot
+- Käyttäjä voi omassa profiilissaan ladata profiilikuvan ja luoda esittelyn tai muokata sitä
 
-## Lopullisia ominaisuuksia:
+## Mitä ei ehditty toteuttaa:
 
-- Käyttäjätilin luominen, sisään- ja uloskirjautuminen
-- Lista alueista, alueelle siirtyminen tuo näkyviin listan viestiketjuista joihin siirtyminen tuo näkyville viestit ja kentän viestin kirjoittamiseen
-- Käyttäjä voi luoda viestiketjun tai kirjoittaa ketjuun viestin, ja poistaa omia luomuksiaan. Ylläpitäjä voi poistaa kaikkea sisältöä
-- Viestejä voidaan "peukuttaa"
-- Alueille ja ketjuille on viestimäärät ja aikaleima viimeisimmästä päivityksestä
-- Käyttäjillä on profiilit, jotka voivat sisältää esittelyn ja profiilikuvan
-- Käyttäjät voivat lähettää toisilleen yksityisviestejä
-- Keskustelualueen viestiketjuja ja viestejä voidaan etsiä hakusanalla
+- Poistotoiminnallisuus
+- Käyttäjien väliset yksityisviestit
+- Viestien haku avainsanalla
+- Kuvaviestit
 
 ## Käynnistysohjeet
 
@@ -45,11 +49,11 @@ Tietokannan skeema pitää määrittää komennolla
 psql < schema.sql 
 ```
 
-Tällä hetkellä aiheita voi luoda ainoastaan lisäämällä ne suoraan tietokantaan. Muutaman esimerkkiaiheen saa luotua tietokannan
-skeeman määrittämisen jälkeen näin
+Muutaman esimerkkiaiheen saa luotua tietokannan skeeman määrittämisen jälkeen näin
 ```
 psql < dummy_data.sql
 ```
+Vaihtoehtoisesti sivulle voi rekisteröityä ylläpitäjänä ja luoda niitä etusivulta käsin.
 
 sovellus käynnistyy projektin juurihakemistossa
 
