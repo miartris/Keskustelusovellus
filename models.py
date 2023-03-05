@@ -3,10 +3,10 @@ from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
 
 def check_user_data(name: str, password: str):
-    query = text("SELECT username, user_id, password FROM users WHERE username=:username")
+    query = text("SELECT username, user_id, password, is_admin FROM users WHERE username=:username")
     result = db.session.execute(query, {"username":name})
     user = result.fetchone()
-    user_object = {"is_user": False, "username": name, "error": None}
+    user_object = {"is_user": False, "username": name, "error": None, "admin": False}
     if not user:
         user_object["error"] = "No such user"        
     else:
@@ -15,13 +15,16 @@ def check_user_data(name: str, password: str):
             user_object["is_user"] = True
         else:
             user_object["error"] = "Wrong password"
+        if user.is_admin == True:
+            user_object["admin"] = True
+    
     return user_object
 
 
-def create_new_user(name: str, password: str):
+def create_new_user(name: str, password: str, as_admin: bool):
     hashed_password = generate_password_hash(password, "sha256")
-    query = text("INSERT INTO users (username, password) VALUES (:username, :password) ON CONFLICT DO NOTHING")
-    db.session.execute(query, {"username":name, "password":hashed_password})
+    query = text("INSERT INTO users (username, password, is_admin) VALUES (:username, :password, :as_admin) ON CONFLICT DO NOTHING")
+    db.session.execute(query, {"username":name, "password":hashed_password, "as_admin":as_admin})
     db.session.commit()
 
 def get_user_id(name: str):
@@ -32,7 +35,7 @@ def get_user_id(name: str):
     
 def create_new_topic(name: str):
     query = text("INSERT INTO topics (name) VALUES (:name) ON CONFLICT DO NOTHING")
-    db.session.exeute(query, {"name":name})
+    db.session.execute(query, {"name":name})
     db.session.commit()
 
 def get_topic(name: str):

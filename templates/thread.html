@@ -2,20 +2,20 @@
 {% block content %}
 {% for post in posts %}
 <ul class="list-group">
-    <li class="border rounded list-group-item mb-2 d-flex flex-column justify-content-center">
+    <li class="border rounded list-group-item mb-2 d-flex flex-column justify-content-center text-break">
         <div class="d-flex mb-auto">
         <div class="mr-auto"><b><a href="{{ url_for('profile', username=post[0]) }}" class="text-dark">{{ post[0] }}</a></b></div>
         <div><small class="" >{{ post[3].strftime('%Y-%m-%d %H.%M.%S') }} </small></div>
         </div>
-        <div class="py-2 mt-2">{{ post[1] }}</div>        
+        <div class="py-2 mt-2 text-wrap">{{ post[1] }}</div>        
     </li>
 </ul>
 {% endfor %}
 {% if session["username"] %}
 <form action="" id="new_post" method="POST">
-    <div class="d-flex justify-content-center align-items-center flex-column">
+    <div class="form-group d-flex justify-content-center align-items-center flex-column">
         <label for="new_post">Create a new post</label>
-        <textarea class="form-control p-1" style="width: 40%;" rows="4" type="text" id="new_post" name="content" placeholder="text"></textarea>
+        <textarea class="form-control p-1" style="width: 40%;" rows= type="text" id="new_post" name="content" placeholder="text"></textarea>
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         <br>
         <input class="btn-dark" type="submit" value="Send"></input>

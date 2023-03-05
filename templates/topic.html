@@ -1,27 +1,28 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<div class="d-flex flex-column justify-content-center align-items-center">
 <h2>This is the place to discuss {{ topic }}</h2>
-<div>
 <h3>Current threads</h3>
-</div>
-<ul>
+<ul class="list-group mb-5">
 {% for item in threads %}
-    <a href="{{ url_for('thread', topic=topic, id=item[0]) }}">{{ item[1] }}</a> 
+    <li class="list-group-item">
+    <a class="p-1" href="{{ url_for('thread', topic=topic, id=item[0]) }}">{{ item[1] }}</a> 
      created at {{ item[2].strftime('%Y-%m-%d %H.%M.%S') }}
     <br>
+    </li>
 {% endfor %}
 </ul>
+</div>
 {% if session.username %}
-<div>
+<div class="form-group d-flex justify-content-center align-items-center flex-column">
     <form action="{{ topic }}" id="new_topic" method="POST">
+        <div>
         <label for="new_topic">Create a new topic</label>
-        <br>
-        <input type="text" name="title" placeholder="title"></input>
-        <br>
-        <textarea type="text" name="content" placeholder="text"></textarea>
+        <input class="form-control" type="text" id=new_topic name="title" placeholder="title"></input>
+        <label for="first_post">Post</label>
+        <textarea class="form-control" id="first_post" type="text" name="content" placeholder="text"></textarea>
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        <br>
         <input type="submit" value="Send"></input>
     </form>
 </div>

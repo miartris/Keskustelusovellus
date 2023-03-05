@@ -11,10 +11,20 @@ app.secret_key = getenv("SECRET_KEY")
 def not_found(e):
     return render_template("error.html", error=404), 404 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
-    topics = models.get_topics_and_threads()
-    return render_template("index.html", topics=topics)
+    if request.method == "GET":
+        topics = models.get_topics_and_threads()
+        return render_template("index.html", topics=topics)
+    if request.method=="POST":
+        if not session["admin"]:
+            abort(403)
+        else:
+            title = request.form["title"]
+            models.create_new_topic(title)
+            flash("Success", "alert-success")
+            return redirect("/")
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -23,21 +33,24 @@ def register():
         name_stripped = name.strip()
         password = request.form["reg_password"]
         password_confirmation = request.form["reg_password_check"]
+        as_admin = False
+        if request.form.get("admin"):
+            as_admin = True
         
         if (password != password_confirmation):
-            flash("Passwords don't match", "is_error")
+            flash("Passwords don't match", "alert-danger")
             return redirect("/register")
         
         if (len(name) < 3 or len(name) > 25 or len(name) != len(name_stripped)):
-            flash("Name must be between 3 and 25 characters long and contain no whitespace", "is_error")
+            flash("Name must be between 3 and 25 characters long and contain no whitespace", "alert-danger")
             return redirect("/login")
 
         if (len(password) < 3 or len(password) != len(password.strip())):
-            flash("Password must be longer than three characters and contain no whitespace", "is_error")
+            flash("Password must be longer than three characters and contain no whitespace", "alert-danger")
             return redirect("/login")
 
-        models.create_new_user(name, password)
-        flash("Registered successfully", "is_success")
+        models.create_new_user(name, password, as_admin)
+        flash("Registered successfully", "alert-success")
         return redirect("/login")
 
     return render_template("register.html")
@@ -55,13 +68,15 @@ def login():
         if user["is_user"]:
             session["username"] = name
             res =  models.get_user_id(session.get("username"))
-            print(f"{res = }")
             session["user_id"] = res
             session["csrf_token"] = secrets.token_hex(16)
-            flash("Login successful", "is_success")
+            print(user)
+            if user["admin"]:
+                session["admin"] = True
+            flash("Login successful", "alert-success")
             return redirect("/")
         else:
-            flash(user["error"])
+            flash(user["error"], "alert-danger")
             return redirect("/login")
 
     else:
@@ -72,7 +87,7 @@ def logout():
     del session["username"]
     del session["csrf_token"]
     del session["user_id"]
-    flash("Logout successful", "is_success")
+    flash("Logout successful", "alert-success")
     return redirect(url_for("index"))
 
 @app.route("/<string:name>", methods=["GET", "POST"])
@@ -89,6 +104,12 @@ def topic(name):
         request_csrf = request.form["csrf_token"]
         if request_csrf != session.get("csrf_token"):
             abort(403)
+        if thread_title.rstrip() == "":
+            flash("Title has to contain letters", "alert-danger")
+            return(redirect(f"/{name}"))
+        if len(thread_title) > 50:
+            flash("Title has to be smaller than 50 letters" "alert-danger")
+            return(redirect(f"/{name}"))
         models.create_new_thread(thread_title, name, session.get("username"))
         id = models.get_thread_id(thread_title)
         models.create_new_post(thread_content, session.get("user_id"), id)

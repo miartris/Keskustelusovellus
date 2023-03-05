@@ -14,4 +14,14 @@
         {% endfor %}
     </ul>
 </div>
+{% if session.admin %}
+<div class="mt-5 form-group d-flex justify-content-center align-items-center flex-column text-center">
+    <form action="" id="new_topic" method="POST">
+        <label for="new_topic">Create a new topic</label>
+        <input class="form-control mb-2" type="text" id=new_topic name="title" placeholder="title"></input>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input class="btn-light" type="submit" value="Send"></input>
+    </form>
+</div>
+{% endif %}
 {% endblock %}
